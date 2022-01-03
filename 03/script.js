@@ -1,6 +1,3 @@
-console.log('Hello ThreeJs World');
-console.log(THREE);
-
 //scene 
 const scene = new THREE.Scene();
 
