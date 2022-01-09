@@ -1,56 +1,24 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import gsap from 'gsap'
-import * as dat from 'lil-gui'
-
-// Debug
-const gui = new dat.GUI({ width: 400 })
-
-const parameters = {
-    color: 0xff0000,
-    spin: () => {
-        gsap.to(mesh.rotation, { duration: 2, y: mesh.rotation.y + (Math.PI * 2)  })
-    }
-}
 
 /**
  * Base
  */
-
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
 
-// Object
+/**
+ * Object
+ */
 const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: parameters.color })
+const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
-// Debug UI
-gui.add(mesh.position, 'y')
-    .min(-3)
-    .max(3)
-    .step(0.01)
-    .name('Elevation')
-
-gui.add(mesh, 'visible')
-    .name('Visibile')
-
-gui.add(material, 'wireframe')
-    .name('Wireframe')
-
-gui.addColor(parameters, 'color')
-    .onChange( () => {
-        material.color.set(parameters.color)
-    })
-    .name('Color')
-
-gui.add(parameters, 'spin')
-    .name('Spin Object')
 /**
  * Sizes
  */
@@ -79,7 +47,9 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
-camera.position.z = 3
+camera.position.x = 1
+camera.position.y = 1
+camera.position.z = 1
 scene.add(camera)
 
 // Controls
