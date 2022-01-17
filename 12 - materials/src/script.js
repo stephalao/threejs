@@ -2,8 +2,22 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
-// Base
+//Texture 
+const textureLoader = new  THREE.TextureLoader()
+const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
+const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
+const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
+const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
+const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+const matCapTexture = textureLoader.load('/textures/matcaps/1.png')
+const gradientTexture = textureLoader.load('/textures/gradients/3.jpg')
+gradientTexture.minFilter = THREE.NearestFilter
+gradientTexture.magFilter = THREE.NearestFilter
+gradientTexture.generateMipmaps = false
 
+// Base
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
 
@@ -11,7 +25,32 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 // Objects
-const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+// const material = new THREE.MeshBasicMaterial()
+// material.map = doorColorTexture
+// material.color = new THREE.Color('green')
+// material.wireframe = true
+// material.transparent = true
+// material.alphaMap = doorAlphaTexture
+
+// const material = new THREE.MeshNormalMaterial()
+// material.flatShading = true
+
+// const material = new THREE.MeshMatcapMaterial()
+// material.matcap = matCapTexture
+
+// const material = new THREE.MeshDepthMaterial()
+
+// const material = new THREE.MeshLambertMaterial()
+
+// const material = new THREE.MeshPhongMaterial()
+// material.shininess = 100
+// material.specular = new THREE.Color(0x1188ff)
+
+// const material = new THREE.MeshToonMaterial()
+// material.gradientMap = gradientTexture
+
+const material = new THREE.MeshStandardMaterial()
+
 
 const sphere = new THREE.Mesh(
     new THREE.SphereBufferGeometry(0.5, 16, 16),
@@ -19,9 +58,9 @@ const sphere = new THREE.Mesh(
 )
 sphere.position.x = -1.5
 
-// PlaneBufferGeometry width, height, widthSegments, & heightSegments last two optional 
+// PlaneGeometry width, height, widthSegments, & heightSegments last two optional 
 const plane = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(1, 1),
+    new THREE.PlaneGeometry(1, 1),
     material
 )
 /* TorusGeometry accepts -
@@ -31,7 +70,7 @@ radialSegments -
 tubularSegments - how cicrular 
 */
 const torus = new THREE.Mesh(
-    new THREE.TorusBufferGeometry(0.3, 0.1, 16, 32),
+    new THREE.TorusBufferGeometry(0.5, 0.3, 16, 32),
     material
 )
 torus.position.x = 1.5
@@ -39,6 +78,14 @@ torus.position.x = 1.5
 // scene.add(sphere)
 // scene.add(plane)
 scene.add(sphere, plane, torus)
+
+// Lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+scene.add(ambientLight)
+
+const pointLight = new THREE.PointLight(0xffffff, 0.5)
+pointLight.position.set(2, 3, 4)
+scene.add(pointLight)
 
 // Sizes 
 // window.innerWidth & innerHeight allow the canvas to cover the visible viewport
