@@ -1,9 +1,17 @@
 import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import * as dat from 'dat.gui'
+
+// Debug Panel 
+const gui = new dat.GUI()
+
+
 
 //Texture 
-const textureLoader = new  THREE.TextureLoader()
+const textureLoader = new THREE.TextureLoader()
+const cubeTextureLoader = new THREE.CubeTextureLoader()
+
 const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
 const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
 const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
@@ -16,6 +24,15 @@ const gradientTexture = textureLoader.load('/textures/gradients/3.jpg')
 gradientTexture.minFilter = THREE.NearestFilter
 gradientTexture.magFilter = THREE.NearestFilter
 gradientTexture.generateMipmaps = false
+
+const enviormentMapTexture = cubeTextureLoader.load([
+    '/textures/environmentMaps/0/px.jpg',
+    '/textures/environmentMaps/0/nx.jpg',
+    '/textures/environmentMaps/0/py.jpg',
+    '/textures/environmentMaps/0/ny.jpg',
+    '/textures/environmentMaps/0/pz.jpg',
+    '/textures/environmentMaps/0/nz.jpg',
+])
 
 // Base
 // Canvas
@@ -49,20 +66,46 @@ const scene = new THREE.Scene()
 // const material = new THREE.MeshToonMaterial()
 // material.gradientMap = gradientTexture
 
+// const material = new THREE.MeshStandardMaterial()
+// material.metalness = .45
+// material.roughness = .65
+// material.map = doorColorTexture
+// material.aoMap = doorAmbientOcclusionTexture
+// material.displacementMap = doorHeightTexture
+// material.displacementScale = 0.1
+// material.metalnessMap  = doorMetalnessTexture
+// material.roughnessMap = doorRoughnessTexture
+// material.normalMap = doorNormalTexture
+// material.normalScale.set(0.5, 0.5)
+// material.transparent = true
+// material.alphaMap = doorAlphaTexture
+
 const material = new THREE.MeshStandardMaterial()
+material.metalness = .7
+material.roughness = .2
+material.envMap = enviormentMapTexture
+
+// Add material to dat.gui debug control panel 
+gui.add(material, 'metalness').min(0).max(1).step(.0001)
+gui.add(material, 'roughness').min(0).max(1).step(.0001)
+// gui.add(material, 'aoMapIntensity').min(0).max(10).step(.0001)
+// gui.add(material, 'displacementScale').min(0).max(1).step(.0001)
 
 
 const sphere = new THREE.Mesh(
-    new THREE.SphereBufferGeometry(0.5, 16, 16),
+    new THREE.SphereBufferGeometry(0.5, 64, 64),
     material
 )
 sphere.position.x = -1.5
+sphere.geometry.setAttribute('uv2', new THREE.BufferAttribute(sphere.geometry.attributes.uv.array, 2))
 
 // PlaneGeometry width, height, widthSegments, & heightSegments last two optional 
 const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
+    new THREE.PlaneGeometry(1, 1, 100, 100),
     material
 )
+plane.geometry.setAttribute('uv2', new THREE.BufferAttribute(plane.geometry.attributes.uv.array, 2))
+
 /* TorusGeometry accepts -
 radius - from center of the circle to the center of the tube
 tube - the radius of the tube
@@ -70,10 +113,11 @@ radialSegments -
 tubularSegments - how cicrular 
 */
 const torus = new THREE.Mesh(
-    new THREE.TorusBufferGeometry(0.5, 0.3, 16, 32),
+    new THREE.TorusBufferGeometry(0.5, 0.3, 64, 128),
     material
 )
 torus.position.x = 1.5
+torus.geometry.setAttribute('uv2', new THREE.BufferAttribute(torus.geometry.attributes.uv.array, 2))
 
 // scene.add(sphere)
 // scene.add(plane)
