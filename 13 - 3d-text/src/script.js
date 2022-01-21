@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
 
 /**
  * Base
@@ -25,8 +26,26 @@ const textureLoader = new THREE.TextureLoader()
 const fontLoader = new FontLoader()
 fontLoader.load(
     '/fonts/helvetiker_regular.typeface.json',
-    () => {
+    (font) => {
         console.log('font loaded baby!')
+        const textGeometry = new TextGeometry(
+            'Global Seun',
+            {
+                font: font,
+                size: .5,
+                height: .2,
+                curveSegments: 12,
+                bevelEnabled: true,
+                bevelThickness: .03,
+                bevelSize: .02,
+                bevelOffset: 0,
+                bevelSegments: 5
+            }
+        )
+        const textMaterial = new THREE.MeshBasicMaterial()
+        textMaterial.wireframe = true
+        const text = new THREE.Mesh(textGeometry, textMaterial)
+        scene.add(text)
     }
 )
 
@@ -37,7 +56,7 @@ const cube = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshBasicMaterial()
 )
-
+cube.position.setY(-2)
 scene.add(cube)
 
 /**
@@ -71,6 +90,7 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 
 camera.position.x = 1
 camera.position.y = 1
 camera.position.z = 2
+// camera.lookAt(text.position)
 scene.add(camera)
 
 // Controls
