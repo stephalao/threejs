@@ -7,7 +7,7 @@ import * as dat from 'lil-gui'
  * Base
  */
 // Debug
-const gui = new dat.GUI()
+const gui = new dat.GUI({width: 400})
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -23,13 +23,60 @@ const textureLoader = new THREE.TextureLoader()
 /**
  * House
  */
+
+// Group
+const house = new THREE.Group()
+scene.add(house)
+
+//walls 
+const walls = new THREE.Mesh(
+    new THREE.BoxBufferGeometry(4, 2.5, 4),
+    new THREE.MeshStandardMaterial({
+        color: '#ac8e82'
+    })
+)
+walls.position.y = 2.5 / 2
+house.add(walls)
+
+//roof 
+const roof = new THREE.Mesh(
+    new THREE.ConeBufferGeometry(3.5, 1, 4),
+    new THREE.MeshStandardMaterial({
+        color: '#b35f45'
+    })
+)
+roof.position.y = 2.5 + 0.5
+roof.rotation.y =  Math.PI * .25
+house.add(roof)
+
+// door
+const door = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(2, 2),
+    new THREE.MeshStandardMaterial({
+        color: '#aa7b7b'
+    })
+)
+door.position.y = 1
+door.position.z = 2 + .01
+house.add(door)
+
+//bushes 
+const bushesGeometry = new THREE.SphereBufferGeometry(1, 16, 16)
+const bushesMaterial = new THREE.MeshStandardMaterial({ color: '#89c854'})
+
+const bush1 = new THREE.Mesh(bushesGeometry, bushesMaterial)
+const bush2 = new THREE.Mesh(bushesGeometry, bushesMaterial)
+const bush3 = new THREE.Mesh(bushesGeometry, bushesMaterial)
+
+
+
 // Temporary sphere
 const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(1, 32, 32),
     new THREE.MeshStandardMaterial({ roughness: 0.7 })
 )
 sphere.position.y = 1
-scene.add(sphere)
+// scene.add(sphere)
 
 // Floor
 const floor = new THREE.Mesh(
@@ -40,21 +87,19 @@ floor.rotation.x = - Math.PI * 0.5
 floor.position.y = 0
 scene.add(floor)
 
-/**
- * Lights
- */
+/** Lights */
 // Ambient light
 const ambientLight = new THREE.AmbientLight('#ffffff', 0.5)
-gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001)
+gui.add(ambientLight, 'intensity').min(0).max(1).step(0.001).name('Ambient Intensity')
 scene.add(ambientLight)
 
 // Directional light
 const moonLight = new THREE.DirectionalLight('#ffffff', 0.5)
 moonLight.position.set(4, 5, - 2)
-gui.add(moonLight, 'intensity').min(0).max(1).step(0.001)
-gui.add(moonLight.position, 'x').min(- 5).max(5).step(0.001)
-gui.add(moonLight.position, 'y').min(- 5).max(5).step(0.001)
-gui.add(moonLight.position, 'z').min(- 5).max(5).step(0.001)
+gui.add(moonLight, 'intensity').min(0).max(1).step(0.001).name('Directional "Moonlight" Intensity')
+gui.add(moonLight.position, 'x').min(- 5).max(5).step(0.001).name('Moon X Poistion')
+gui.add(moonLight.position, 'y').min(- 5).max(5).step(0.001).name('Moon Y Poistion')
+gui.add(moonLight.position, 'z').min(- 5).max(5).step(0.001).name('Moon Z Poistion')
 scene.add(moonLight)
 
 /**
