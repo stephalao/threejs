@@ -26,20 +26,32 @@ object1.position.x = - 2
 
 const object2 = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 16, 16),
-    new THREE.MeshBasicMaterial({ color: '#ff0000' })
+    new THREE.MeshBasicMaterial({ color: '#fff000' })
 )
 
 const object3 = new THREE.Mesh(
     new THREE.SphereGeometry(0.5, 16, 16),
-    new THREE.MeshBasicMaterial({ color: '#ff0000' })
+    new THREE.MeshBasicMaterial({ color: '#122dff' })
 )
 object3.position.x = 2
 
 scene.add(object1, object2, object3)
 
-/**
- * Sizes
- */
+// Raycaster 
+const raycaster = new THREE.Raycaster()
+// const rayOrigin = new THREE.Vector3(-3, 0, 0)
+// const rayDirection = new THREE.Vector3(10, 0, 0)
+
+// rayDirection.normalize()
+// raycaster.set(rayOrigin, rayDirection)
+
+// const intersect = raycaster.intersectObject(object2)
+// console.log(intersect)
+
+// const intersects = raycaster.intersectObjects([object1, object2, object3])
+// console.log(intersects)
+
+/** Sizes */
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -89,6 +101,12 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+
+    // Animate Objects 
+    object1.position.y = Math.sin(elapsedTime * 0.75) * 1.5
+    object2.position.y = Math.sin(elapsedTime * 0.75) * 1.5
+    object3.position.y = Math.sin(elapsedTime * 0.75) * 1.5
+
 
     // Update controls
     controls.update()
