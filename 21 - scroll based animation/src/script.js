@@ -125,6 +125,17 @@ window.addEventListener('scroll', () => {
     scrollY = window.scrollY
 })
 
+
+// Cursor
+const cursor = {}
+cursor.x = 0 
+cursor.y = 0 
+
+window.addEventListener('mousemove', (event) => {
+    cursor.x = event.clientX / sizes.width - 0.5
+    cursor.y = event.clientY / sizes.height - 0.5
+})
+
 /**
  * Animate
  */
@@ -136,6 +147,11 @@ const tick = () =>
 
     //Animate Camera 
     camera.position.y = - scrollY / sizes.height * objectDistance
+
+    const parallaxX = cursor.x
+    const parallaxY = cursor.y
+    camera.position.x = parallaxX
+    camera.position.y = parallaxY
 
     // Animate Meshes 
     for( const mesh of sectionMeshes){
