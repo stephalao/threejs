@@ -8,6 +8,10 @@ import CANNON from 'cannon'
  * Debug
  */
 const gui = new dat.GUI({width: 400})
+const debugObject = {}
+debugObject.createSphere = () =>{
+    console.log('create sphere')
+}
 
 /**
  * Base
@@ -194,13 +198,13 @@ const createSphere = (radius, position) => {
     world.addBody(body)
 
     // Save in objects to update 
-    objectToUpdate.push(
+    objectToUpdate.push({
         mesh,
         body
-    )
+
+    })
 }
 createSphere(0.5, {x:0, y:3, z:0 })
-console.log(objectToUpdate)
 
 /**
  * Animate
@@ -215,6 +219,10 @@ const tick = () =>
     oldElapsedTime = elapsedTime
 
     // Update physics world
+    for(const object of objectToUpdate){
+        object.mesh.position.copy(object.body.position)
+    }
+
     // sphereBody.applyForce(new CANNON.Vec3(-0.5, 0, 0), sphereBody.position)
     world.step(1/60, deltaTime, 3)
 
