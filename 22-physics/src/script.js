@@ -10,7 +10,6 @@ import CANNON from 'cannon'
 const gui = new dat.GUI({width: 400})
 const debugObject = {}
 debugObject.createSphere = () =>{
-    console.log('create sphere')
     createSphere(
         Math.random() * 0.5, 
         {   x: (Math.random() - 0.5) * 3, 
@@ -19,7 +18,20 @@ debugObject.createSphere = () =>{
         }
     )
 }
+
+debugObject.createBox = () =>{
+    createBox(
+        Math.random(), 
+        Math.random(), 
+        Math.random(), 
+        {   x: (Math.random() - 0.5) * 3, 
+            y: 3, 
+            z: (Math.random() - 0.5) * 3 
+        }
+    )
+}
 gui.add(debugObject, 'createSphere').name('Create Sphere')
+gui.add(debugObject, 'createBox').name('Create Box')
 
 /**
  * Base
@@ -215,11 +227,38 @@ const createSphere = (radius, position) => {
 createSphere(0.5, {x:0, y:3, z:0 })
 
 // Create Boxes 
-const boxGeometry = ''
-const boxMaterial = ''
-// const createBox = () => {
+const boxGeometry = new THREE.BoxBufferGeometry(1,1,1)
+const boxMaterial = new THREE.MeshStandardMaterial({
+    metalness: 0.3,
+    roughness: 0.4,
+    envMap: environmentMapTexture
+})
 
-// }
+const createBox = (width, height, depth, position) => {
+    // Three.js Mesh
+    const mesh = new THREE.Mesh(boxGeometry, boxMaterial)
+    mesh.scale.set(width, height, depth)
+    mesh.castShadow = true
+    mesh.position.copy(position)
+    scene.add(mesh)
+
+    // Cannon.js Body
+    const shape = new CANNON.Box(new CANNON.Vec3(width/2, height/2, depth/2))
+    const body = new CANNON.Body({
+        mass: 1,
+        position: new CANNON.Vec3(0, 3, 0),
+        shape,
+        material: defaultMaterial
+    })
+    body.position.copy(position)
+    world.addBody(body)
+
+    // Save in objects to update 
+    objectToUpdate.push({
+        mesh,
+        body
+    })
+}
 
 /**
  * Animate
@@ -236,6 +275,7 @@ const tick = () =>
     // Update physics world
     for(const object of objectToUpdate){
         object.mesh.position.copy(object.body.position)
+        object.mesh.quaternion.copy(object.body.quaternion)
     }
 
     // sphereBody.applyForce(new CANNON.Vec3(-0.5, 0, 0), sphereBody.position)
