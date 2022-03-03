@@ -2,7 +2,7 @@ import './style.css'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import * as dat from 'lil-gui'
-import CANNON from 'cannon'
+import * as CANNON from 'cannon-es'
 
 /**
  * Debug
@@ -30,8 +30,21 @@ debugObject.createBox = () =>{
         }
     )
 }
+
+debugObject.reset = () =>{
+    for(const object of objectToUpdate){
+        // Remove body
+        object.body.removeEventListener('collide', playHitSound)
+        world.removeBody(object.body)
+
+        // Remove mesh
+        scene.remove(object.mesh)
+        objectToUpdate.splice(0, objectToUpdate.length)
+    }
+}
 gui.add(debugObject, 'createSphere').name('Create Sphere')
 gui.add(debugObject, 'createBox').name('Create Box')
+gui.add(debugObject, 'reset').name('Reset')
 
 /**
  * Base
@@ -41,6 +54,18 @@ const canvas = document.querySelector('canvas.webgl')
 
 // Scene
 const scene = new THREE.Scene()
+
+// Sound
+const hitSound = new Audio('/sounds/hit.mp3')
+const playHitSound = (collision) => {
+    const impactStrength = collision.contact.getImpactVelocityAlongNormal()
+
+    if(impactStrength > 1.5 ){
+        hitSound.volume = Math.random()
+        hitSound.currentTime = 0
+        hitSound.play()
+    }
+}
 
 /**
  * Textures
@@ -60,6 +85,8 @@ const environmentMapTexture = cubeTextureLoader.load([
 // Physics 
 // World
 const world = new CANNON.World()
+world.broadphase = new CANNON.SAPBroadphase(world)
+world.allowSleep = true
 world.gravity.set(0, - 9.82, 0)
 
 // Physiscs Materials 
@@ -76,15 +103,6 @@ const defaultContactMaterial = new CANNON.ContactMaterial(
 world.addContactMaterial(defaultContactMaterial)
 world.defaultContactMaterial = defaultContactMaterial
 
-//Sphere
-// const sphereShape = new CANNON.Sphere(0.5)
-// const sphereBody = new CANNON.Body({
-//     mass: 1,
-//     position: new CANNON.Vec3(0, 3, 0),
-//     shape: sphereShape
-// })
-// sphereBody.applyLocalForce(new CANNON.Vec3(150, 0, 0), new CANNON.Vec3(0, 0, 0))
-// world.addBody(sphereBody)
 
 // Floor 
 const floorShape = new CANNON.Plane()
@@ -94,21 +112,6 @@ floorBody.addShape(floorShape)
 floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5)
 world.addBody(floorBody)
 
-/**
- * Test sphere
- */
-// const sphere = new THREE.Mesh(
-//     new THREE.SphereGeometry(0.5, 32, 32),
-//     new THREE.MeshStandardMaterial({
-//         metalness: 0.3,
-//         roughness: 0.4,
-//         envMap: environmentMapTexture,
-//         envMapIntensity: 0.5
-//     })
-// )
-// sphere.castShadow = true
-// sphere.position.y = 0.5
-// scene.add(sphere)
 
 /**
  * Floor
@@ -215,6 +218,7 @@ const createSphere = (radius, position) => {
         material: defaultMaterial
     })
     body.position.copy(position)
+    body.addEventListener('collide', playHitSound)
     world.addBody(body)
 
     // Save in objects to update 
@@ -251,6 +255,7 @@ const createBox = (width, height, depth, position) => {
         material: defaultMaterial
     })
     body.position.copy(position)
+    body.addEventListener('collide', playHitSound)
     world.addBody(body)
 
     // Save in objects to update 
